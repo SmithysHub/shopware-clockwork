@@ -55,6 +55,7 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
     public function install()
     {
         $this->subscribeEvent('Enlight_Controller_Front_StartDispatch', 'onStartDispatch');
+        $this->registerController('Frontend', 'Clockwork');
 
         return true;
     }
