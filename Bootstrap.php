@@ -12,6 +12,7 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
             'Shopware\\Plugins\\' . basename(__DIR__) ,
             $this->Path()
         );
+        require_once __DIR__ . '/vendor/autoload.php';
     }
 
     /**
@@ -35,7 +36,7 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
      */
     public function getVersion()
     {
-        return "1.0";
+        return "dev";
     }
 
     /**
