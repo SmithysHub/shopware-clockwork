@@ -1,8 +1,9 @@
 <?php
 
+use Shopware\Plugins\ShopwareClockwork\Subscriber\Container;
+
 class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
-
     /**
      * The afterInit function registers the custom plugin models.
      */
@@ -58,6 +59,11 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
         $this->subscribeEvent('Enlight_Controller_Front_StartDispatch', 'onStartDispatch');
         $this->registerController('Frontend', 'Clockwork');
 
+        $clockWorkLog = (new Container())->getClockworkLogPath();
+        if( ! is_dir($clockWorkLog) ) {
+            mkdir($clockWorkLog, 0755);
+        }
+
         return true;
     }
 
@@ -69,13 +75,13 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
         $events = $this->Application()->Events();
 
         $subscribers = [
-
+            new Container(),
         ];
 
         foreach ($subscribers as $subscriber) {
             $events->addSubscriber($subscriber);
         }
-
     }
+
 
 }
