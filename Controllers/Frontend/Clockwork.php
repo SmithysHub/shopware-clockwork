@@ -1,6 +1,6 @@
 <?php
 
-class Shopware_Controllers_Frontend_Clockwork extends Enlight_Controller_Action
+class Shopware_Controllers_Frontend_Clockwork extends \Enlight_Controller_Action
 {
 
     public function preDispatch()
@@ -11,6 +11,7 @@ class Shopware_Controllers_Frontend_Clockwork extends Enlight_Controller_Action
     public function postDispatch()
     {
         $data = $this->View()->getAssign();
+
         $pretty = $this->Request()->getParam('pretty', false);
 
         $data = Zend_Json::encode($data);
@@ -25,6 +26,9 @@ class Shopware_Controllers_Frontend_Clockwork extends Enlight_Controller_Action
     public function indexAction()
     {
         $id = $this->Request()->getParam('id', null);
+
+        $clockwork = $this->container->get('shopwareclockwork.clockwork');
+        $this->View()->assign(json_decode($clockwork->getStorage()->retrieveAsJson($id), true));
     }
 
 
