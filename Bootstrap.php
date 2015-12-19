@@ -3,6 +3,8 @@
 use Clockwork\Clockwork;
 use Clockwork\DataSource\PhpDataSource;
 use Shopware\Plugin\Debug\Components\TemplateVarCollector;
+use Shopware\Plugins\ShopwareClockwork\Clockwork\Components\ClockworkLogger;
+use Shopware\Plugins\ShopwareClockwork\Clockwork\DataSource\ShopwareDataSource;
 use Shopware\Plugins\ShopwareClockwork\Subscriber\Container;
 
 class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Components_Plugin_Bootstrap
@@ -130,9 +132,10 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
      */
     public function onDispatchLoopShutdown(\Enlight_Event_EventArgs $args)
     {
-//        foreach ($this->collectors as $collector) {
-//            $collector->logResults($this->getLogger());
-//        }
+        $clockworkLogger = new ClockworkLogger();
+        foreach ($this->collectors as $collector) {
+            $collector->logResults($clockworkLogger);
+        }
         /** @var Clockwork $clockwork */
         $clockwork = Shopware()->Container()->get('shopwareclockwork.clockwork');
 
@@ -140,6 +143,7 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
         $args->getResponse()->setHeader("X-Clockwork-Version",  $clockwork::VERSION);
         $args->getResponse()->setHeader("X-Clockwork-Path",  '/Clockwork/index/id/');
         $clockwork->addDataSource(new PhpDataSource());
+        $clockwork->addDataSource(new ShopwareDataSource($clockworkLogger));
         $clockwork->resolveRequest();
         $clockwork->storeRequest();
     }
