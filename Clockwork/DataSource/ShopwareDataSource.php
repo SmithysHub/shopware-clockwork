@@ -24,15 +24,18 @@ class ShopwareDataSource extends DataSource
     public function resolve(Request $request)
     {
         $data = $this->context->getData();
-//        foreach ($data as $name => $item) {
-//            $request->{$name} =  $this->removePasswords(
+        foreach ($data as $name => $item) {
+            $request->{$name} =  $item;
+        }
+//
+//        $item = [
+//            [ 'data' =>[ 'name' => 'test' , 'data' => 'dataView']],
+//            [ 'data' =>[ 'name' => 'test1' , 'data' => [1,2,3]]],
+//            [ 'data' =>[ 'name' => 'test2' , 'data' => ['test' => 1, 'test2' => 2]]],
+//        ];
+//        $request->viewsData =$this->removePasswords(
 //                $this->replaceUnserializable($item)
 //            );
-//        }
-        $request->viewsData = [
-            'name' => [1,2,3,4],
-            'test' => 'avav'
-        ];
         return $request;
     }
 }
