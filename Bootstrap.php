@@ -6,6 +6,8 @@ use Shopware\Plugin\Debug\Components\TemplateVarCollector;
 use Shopware\Plugins\ShopwareClockwork\Clockwork\Components\ClockworkLogger;
 use Shopware\Plugins\ShopwareClockwork\Clockwork\DataSource\ShopwareDataSource;
 use Shopware\Plugins\ShopwareClockwork\Subscriber\Container;
+use Shopware\Plugin\Debug\Components\Utils;
+use Shopware\Plugin\Debug\Components\ErrorCollector;
 
 class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
@@ -114,9 +116,11 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
     public function registerCollectors()
     {
         $eventManager = $this->get('events');
-
+        $utils = new Utils();
+        $errorHandler = $this->Collection()->get('ErrorHandler');
 
         $this->collectors[] = (new TemplateVarCollector($eventManager));
+        $this->collectors[] = new ErrorCollector($errorHandler, $utils);
 
         foreach ($this->collectors as $collector) {
             $collector->start();
@@ -132,7 +136,7 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
      */
     public function onDispatchLoopShutdown(\Enlight_Event_EventArgs $args)
     {
-        $clockworkLogger = new ClockworkLogger();
+        $clockworkLogger = new ClockworkLogger('clockwork');
         foreach ($this->collectors as $collector) {
             $collector->logResults($clockworkLogger);
         }
