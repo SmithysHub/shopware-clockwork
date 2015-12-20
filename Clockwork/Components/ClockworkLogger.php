@@ -14,6 +14,7 @@ class ClockworkLogger extends Logger
         'viewsData' => [],
         'log' => [],
         'databaseQueries' => [],
+        ''
     ];
     /**
      * @param string|array $label
@@ -32,6 +33,12 @@ class ClockworkLogger extends Logger
         } elseif  ( strpos($label, 'Database Querys') !== false || strpos($label, 'Model Querys') !== false) {
             $this->formatSqlQuerys($label, $data);
         }
+    }
+
+    public function setBaseInfo( \Enlight_Controller_Request_RequestHttp $request ) {
+        $this->data['controller'] = $request->getControllerName();
+        $this->data['getData'] = $request->getQuery();
+        $this->data['postData'] = $request->getPost();
     }
 
     /**

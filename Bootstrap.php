@@ -141,6 +141,8 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
     public function onDispatchLoopShutdown(\Enlight_Event_EventArgs $args)
     {
         $clockworkLogger = new ClockworkLogger('clockwork');
+        $clockworkLogger->setBaseInfo( $args->getRequest() );
+
         foreach ($this->collectors as $collector) {
             $collector->logResults($clockworkLogger);
         }

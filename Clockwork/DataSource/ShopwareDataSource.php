@@ -27,15 +27,7 @@ class ShopwareDataSource extends DataSource
         foreach ($data as $name => $item) {
             $request->{$name} =  $item;
         }
-//
-//        $item = [
-//            [ 'data' =>[ 'name' => 'test' , 'data' => 'dataView']],
-//            [ 'data' =>[ 'name' => 'test1' , 'data' => [1,2,3]]],
-//            [ 'data' =>[ 'name' => 'test2' , 'data' => ['test' => 1, 'test2' => 2]]],
-//        ];
-//        $request->viewsData =$this->removePasswords(
-//                $this->replaceUnserializable($item)
-//            );
+
         return $request;
     }
 }
