@@ -25,6 +25,9 @@ class ShopwareDataSource extends DataSource
     {
         $data = $this->context->getData();
         foreach ($data as $name => $item) {
+            if($name === 'postData') {
+                $item = $this->removePasswords($item);
+            }
             $request->{$name} =  $item;
         }
 
