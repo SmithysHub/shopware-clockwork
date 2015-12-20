@@ -13,6 +13,7 @@ class ClockworkLogger extends Logger
     protected $data = [
         'viewsData' => [],
         'log' => [],
+        'databaseQueries' => [],
     ];
     /**
      * @param string|array $label
@@ -28,6 +29,8 @@ class ClockworkLogger extends Logger
             $this->formatViewData($label, $data);
         } elseif  ( strpos($label, 'Error Log') !== false ) {
             $this->formatErrorData($data);
+        } elseif  ( strpos($label, 'Database Querys') !== false ) {
+            $this->formatSqlQuerys($label, $data);
         }
     }
 
@@ -52,7 +55,7 @@ class ClockworkLogger extends Logger
      * @param $label
      * @param array $data
      */
-    public function formatViewData($label, array $data)
+    protected function formatViewData($label, array $data)
     {
         $this->data['viewsData'][] = ['data' => [
             'name' => $label,
@@ -70,10 +73,9 @@ class ClockworkLogger extends Logger
     }
 
     /**
-     * @param $label
      * @param array $data
      */
-    public function formatErrorData(array $data)
+    protected function formatErrorData(array $data)
     {
         array_shift($data);
         foreach ($data as $item) {
@@ -89,6 +91,29 @@ class ClockworkLogger extends Logger
                     'level' => $level,
                     'message' => $item[2] . ' | ' . $item[3] . ' in: ' . $item[5] . ':' . $item[4]
                 );
+        }
+    }
+
+    protected function formatSqlQuerys($label, array $data)
+    {
+        array_shift($data);
+        $this->data['databaseQueries'][] = [
+            'query' => $label,
+            'duration' => 0
+        ];
+
+        foreach ($data as $item) {
+            $query = $item[2];
+            if( !empty($item[3]) ) {
+                $query .= ' | Params: ' . json_encode($item[3]);
+            }
+            if( $item[1] > 1 ) {
+                $query .= ' | Count: ' . $item[1];
+            }
+            $this->data['databaseQueries'][] = [
+                'query' => $query,
+                'duration' => (float)$item[0]
+            ];
         }
     }
 

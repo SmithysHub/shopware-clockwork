@@ -8,6 +8,7 @@ use Shopware\Plugins\ShopwareClockwork\Clockwork\DataSource\ShopwareDataSource;
 use Shopware\Plugins\ShopwareClockwork\Subscriber\Container;
 use Shopware\Plugin\Debug\Components\Utils;
 use Shopware\Plugin\Debug\Components\ErrorCollector;
+use Shopware\Plugin\Debug\Components\DatabaseCollector;
 
 class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
@@ -121,6 +122,7 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
 
         $this->collectors[] = (new TemplateVarCollector($eventManager));
         $this->collectors[] = new ErrorCollector($errorHandler, $utils);
+        $this->collectors[] = new DatabaseCollector($this->get('db'));
 
         foreach ($this->collectors as $collector) {
             $collector->start();
@@ -140,6 +142,7 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
         foreach ($this->collectors as $collector) {
             $collector->logResults($clockworkLogger);
         }
+
         /** @var Clockwork $clockwork */
         $clockwork = Shopware()->Container()->get('shopwareclockwork.clockwork');
 
