@@ -9,6 +9,7 @@ use Shopware\Plugins\ShopwareClockwork\Subscriber\Container;
 use Shopware\Plugin\Debug\Components\Utils;
 use Shopware\Plugin\Debug\Components\ErrorCollector;
 use Shopware\Plugin\Debug\Components\DatabaseCollector;
+use Shopware\Plugin\Debug\Components\DbalCollector;
 
 class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
@@ -123,6 +124,7 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
         $this->collectors[] = (new TemplateVarCollector($eventManager));
         $this->collectors[] = new ErrorCollector($errorHandler, $utils);
         $this->collectors[] = new DatabaseCollector($this->get('db'));
+        $this->collectors[] = new DbalCollector($this->get('modelconfig'));
 
         foreach ($this->collectors as $collector) {
             $collector->start();

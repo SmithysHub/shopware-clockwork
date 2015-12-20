@@ -29,7 +29,7 @@ class ClockworkLogger extends Logger
             $this->formatViewData($label, $data);
         } elseif  ( strpos($label, 'Error Log') !== false ) {
             $this->formatErrorData($data);
-        } elseif  ( strpos($label, 'Database Querys') !== false ) {
+        } elseif  ( strpos($label, 'Database Querys') !== false || strpos($label, 'Model Querys') !== false) {
             $this->formatSqlQuerys($label, $data);
         }
     }
