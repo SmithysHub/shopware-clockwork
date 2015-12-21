@@ -1,7 +1,9 @@
 <?php
 namespace Shopware\Plugins\ShopwareClockwork\Clockwork\Components;
 
+use Clockwork\Clockwork;
 use Shopware\Components\Logger;
+use Psr\Log\LogLevel;
 
 /**
  * @category  Shopware
@@ -86,18 +88,16 @@ class ClockworkLogger extends Logger
     {
         array_shift($data);
         foreach ($data as $item) {
-            $level = 3;
+            $level = LogLevel::INFO;
+            $message = $item[2] . ' | ' . $item[3] . ' in: ' . $item[5] . ':' . $item[4];
             if ( $item[2] === 'E_WARNING' ) {
-                $level = 4;
+                $level = LogLevel::WARNING;
             } elseif( $item[2] === 'E_RECOVERABLE_ERROR' ){
-                $level = 5;
+                $level = LogLevel::ERROR;
+            } elseif( $item[2] === 'E_NOTICE' ){
+                $level = LogLevel::NOTICE;
             }
-            $this->data['log'][] =
-                array(
-                    'time' => 0,
-                    'level' => $level,
-                    'message' => $item[2] . ' | ' . $item[3] . ' in: ' . $item[5] . ':' . $item[4]
-                );
+            $this->getClockWork()->log($level, $message);
         }
     }
 
@@ -124,5 +124,11 @@ class ClockworkLogger extends Logger
         }
     }
 
+    /**
+     * @return Clockwork
+     */
+    protected function getClockWork(){
+        return Shopware()->Container()->get('shopwareclockwork.clockwork');
+    }
 
 }
