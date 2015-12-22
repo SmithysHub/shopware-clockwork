@@ -2,8 +2,8 @@
 
 use Clockwork\Clockwork;
 use Clockwork\DataSource\PhpDataSource;
-use Shopware\Plugin\Debug\Components\TemplateVarCollector;
 use Shopware\Plugins\ShopwareClockwork\Clockwork\Components\ClockworkLogger;
+use Shopware\Plugins\ShopwareClockwork\Clockwork\Components\Collector\ControllerCollector;
 use Shopware\Plugins\ShopwareClockwork\Clockwork\Components\Collector\EventCollector;
 use Shopware\Plugins\ShopwareClockwork\Clockwork\Components\Collector\TemplateCollector;
 use Shopware\Plugins\ShopwareClockwork\Clockwork\DataSource\ShopwareDataSource;
@@ -12,6 +12,7 @@ use Shopware\Plugin\Debug\Components\Utils;
 use Shopware\Plugin\Debug\Components\ErrorCollector;
 use Shopware\Plugin\Debug\Components\DatabaseCollector;
 use Shopware\Plugin\Debug\Components\DbalCollector;
+use Shopware\Plugin\Debug\Components\TemplateVarCollector;
 
 class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
@@ -130,6 +131,7 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
 
         $this->collectors[] = new TemplateCollector($this->get('template'), $utils, $this->get('kernel')->getRootDir());
         $this->collectors[] = new EventCollector($eventManager, $utils);
+        //$this->collectors[] = new ControllerCollector($eventManager, $utils); //@toDo diff between EventCollector
 
         foreach ($this->collectors as $collector) {
             $collector->start();

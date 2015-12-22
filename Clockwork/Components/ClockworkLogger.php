@@ -38,6 +38,8 @@ class ClockworkLogger extends Logger
             $this->setControllerTimeline($data);
         } elseif  ( strpos($label, 'Benchmark Events') !== false ) {
             $this->setEventInfo($data);
+        } elseif  ( strpos($label, 'Benchmark Controller') !== false ) {
+            $this->setControllerEventTimeline($data);
         } else {
             dump($label, $data);
         }
@@ -129,6 +131,17 @@ class ClockworkLogger extends Logger
             ];
         }
     }
+
+    protected function setControllerEventTimeline(array $data){
+        $clockWork = $this->getClockWork();
+
+        array_shift($data);
+        foreach ($data as $item) {
+            $clockWork->getTimeline()->addEvent($item[0], $item[0], $item[3], $item[2] + $item[3]);
+        }
+
+    }
+
 
     protected function setControllerTimeline(array $data){
         $clockWork = $this->getClockWork();
