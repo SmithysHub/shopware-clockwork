@@ -34,6 +34,11 @@ class ClockworkLogger extends Logger
             $this->formatErrorData($data);
         } elseif  ( strpos($label, 'Database Querys') !== false || strpos($label, 'Model Querys') !== false) {
             $this->formatSqlQuerys($label, $data);
+        } elseif  ( strpos($label, 'Benchmark Template') !== false ) {
+            $this->setControllerTimeline($label, $data);
+        } else {
+//            Benchmark Template
+            dump($label, $data);
         }
     }
 
@@ -122,6 +127,16 @@ class ClockworkLogger extends Logger
                 'duration' => (float)$item[0]
             ];
         }
+    }
+
+    protected function setControllerTimeline($label, array $data){
+        $clockWork = $this->getClockWork();
+//        dump($data);
+        array_shift($data);
+        foreach ($data as $item) {
+            $clockWork->getTimeline()->addEvent($item[0], $item[0], $item[4], $item[4] + $item[2] + $item[3]);
+        }
+
     }
 
     /**
