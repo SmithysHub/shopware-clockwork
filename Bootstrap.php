@@ -4,6 +4,7 @@ use Clockwork\Clockwork;
 use Clockwork\DataSource\PhpDataSource;
 use Shopware\Plugin\Debug\Components\TemplateVarCollector;
 use Shopware\Plugins\ShopwareClockwork\Clockwork\Components\ClockworkLogger;
+use Shopware\Plugins\ShopwareClockwork\Clockwork\Components\Collector\EventCollector;
 use Shopware\Plugins\ShopwareClockwork\Clockwork\Components\Collector\TemplateCollector;
 use Shopware\Plugins\ShopwareClockwork\Clockwork\DataSource\ShopwareDataSource;
 use Shopware\Plugins\ShopwareClockwork\Subscriber\Container;
@@ -128,6 +129,7 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
         $this->collectors[] = new DbalCollector($this->get('modelconfig'));
 
         $this->collectors[] = new TemplateCollector($this->get('template'), $utils, $this->get('kernel')->getRootDir());
+        $this->collectors[] = new EventCollector($eventManager, $utils);
 
         foreach ($this->collectors as $collector) {
             $collector->start();
