@@ -4,6 +4,7 @@ namespace Shopware\Plugins\ShopwareClockwork\Subscriber;
 use Clockwork\Clockwork;
 use Clockwork\Storage\FileStorage;
 use Enlight\Event\SubscriberInterface;
+use Shopware\Plugins\ShopwareClockwork\Clockwork\DataSource\ShopwareDataSource;
 
 class Container implements SubscriberInterface
 {
@@ -24,7 +25,8 @@ class Container implements SubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            'Enlight_Bootstrap_InitResource_shopwareclockwork.clockwork' => 'onClockworkService'
+            'Enlight_Bootstrap_InitResource_shopwareclockwork.clockwork' => 'onClockworkService',
+            'Enlight_Bootstrap_InitResource_shopwareclockwork.datasource' => 'onClockworkDataSourceService'
         ];
     }
 
@@ -34,9 +36,19 @@ class Container implements SubscriberInterface
     public function onClockworkService()
     {
         $clockwork = new Clockwork();
-        //@ToDo Check if Allowed -> NullStorage
         $clockwork->setStorage(new FileStorage($this->getClockworkLogPath()));
         return $clockwork;
+    }
+
+    /**
+     * @param \Enlight_Event_EventArgs $args
+     * @return ShopwareDataSource
+     */
+    public function onClockworkDataSourceService(\Enlight_Event_EventArgs $args)
+    {
+        $shopwareDataSource = new ShopwareDataSource();
+        $shopwareDataSource->setBaseInfo( $args->getRequest() );
+        return $shopwareDataSource;
     }
 
     /**
