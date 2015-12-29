@@ -110,7 +110,8 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
 
         $this->get('events')->addListener(
             'Enlight_Controller_Front_DispatchLoopShutdown',
-            array($this, 'onDispatchLoopShutdown')
+            array($this, 'onDispatchLoopShutdown'),
+            10000
         );
 
     }
@@ -131,7 +132,6 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
 
         $this->collectors[] = new TemplateCollector($this->get('template'), $utils, $this->get('kernel')->getRootDir());
         $this->collectors[] = new EventCollector($eventManager, $utils);
-        //$this->collectors[] = new ControllerCollector($eventManager, $utils); //@toDo diff between EventCollector
 
         foreach ($this->collectors as $collector) {
             $collector->start();
@@ -150,20 +150,13 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
         /** @var Clockwork $clockwork */
         $clockwork = Shopware()->Container()->get('shopwareclockwork.clockwork');
 
-        $clockworkLogger = new ClockworkLogger('clockwork');
-        $clockworkLogger->setBaseInfo( $args->getRequest() );
-
-        foreach ($this->collectors as $collector) {
-            $collector->logResults($clockworkLogger);
-        }
-
-
-
         $args->getResponse()->setHeader("X-Clockwork-Id", $clockwork->getRequest()->id);
         $args->getResponse()->setHeader("X-Clockwork-Version",  $clockwork::VERSION);
         $args->getResponse()->setHeader("X-Clockwork-Path",  '/Clockwork/index/id/');
+
         $clockwork->addDataSource(new PhpDataSource());
-        $clockwork->addDataSource(new ShopwareDataSource($clockworkLogger));
+        $clockwork->addDataSource(Shopware()->Container()->get('shopwareclockwork.datasource'));
+
         $clockwork->resolveRequest();
         $clockwork->storeRequest();
     }
