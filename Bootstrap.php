@@ -1,32 +1,13 @@
 <?php
 
-use Clockwork\Clockwork;
-use Clockwork\DataSource\PhpDataSource;
 use Shopware\Plugins\ShopwareClockwork\Clockwork\Components\ClockworkLogger;
-use Shopware\Plugins\ShopwareClockwork\Clockwork\Components\Collector\ControllerCollector;
-use Shopware\Plugins\ShopwareClockwork\Clockwork\Components\Collector\EventCollector;
-use Shopware\Plugins\ShopwareClockwork\Clockwork\Components\Collector\TemplateCollector;
-use Shopware\Plugins\ShopwareClockwork\Clockwork\DataSource\ShopwareDataSource;
+use Shopware\Plugins\ShopwareClockwork\Clockwork\Components\Log\ClockworkHandler;
 use Shopware\Plugins\ShopwareClockwork\Subscriber\Container;
-use Shopware\Plugin\Debug\Components\Utils;
-use Shopware\Plugin\Debug\Components\ErrorCollector;
-use Shopware\Plugin\Debug\Components\DatabaseCollector;
-use Shopware\Plugin\Debug\Components\DbalCollector;
-use Shopware\Plugin\Debug\Components\TemplateVarCollector;
+use Shopware\Plugins\ShopwareClockwork\Subscriber\Debug;
+use Shopware\Plugins\ShopwareClockwork\Subscriber\DispatchLoopShutdown;
 
 class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
-
-    /**
-     * @var Logger
-     */
-    protected $logger;
-
-    /**
-     * @var CollectorInterface[]
-     */
-    protected $collectors = [];
-
     /**
      * The afterInit function registers the custom plugin models.
      */
@@ -92,73 +73,31 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
 
     /**
      * register all subscriber class for dynamic event subsciption without plugin reinstallation
+     *
+     * @param \Enlight_Event_EventArgs $args
      */
-    public function onStartDispatch()
+    public function onStartDispatch(\Enlight_Event_EventArgs $args)
     {
         $events = $this->Application()->Events();
+        $events->addSubscriber(new Container());
 
         $subscribers = [
-            new Container(),
+            new Debug()
         ];
+
+        /** @var \Shopware_Plugins_Core_Debug_Bootstrap  $debugPlugin */
+        $debugPlugin = Shopware()->Plugins()->Core()->Debug();
+        /** @var \Enlight_Controller_Request_Request $request */
+        $request = $args->getSubject()->Request();
+
+        if( $debugPlugin->isRequestAllowed($request) === true && (new ClockworkHandler())->acceptsRequest($request) === true ) {
+            $subscribers[] = new DispatchLoopShutdown();
+        }
 
         foreach ($subscribers as $subscriber) {
             $events->addSubscriber($subscriber);
         }
-
-
-        $this->registerCollectors();
-
-        $this->get('events')->addListener(
-            'Enlight_Controller_Front_DispatchLoopShutdown',
-            array($this, 'onDispatchLoopShutdown'),
-            10000
-        );
-
     }
 
-    /**
-     * Registeres active collectors
-     */
-    public function registerCollectors()
-    {
-        $eventManager = $this->get('events');
-        $utils = new Utils();
-        $errorHandler = $this->Collection()->get('ErrorHandler');
-
-        $this->collectors[] = (new TemplateVarCollector($eventManager));
-        $this->collectors[] = new ErrorCollector($errorHandler, $utils);
-        $this->collectors[] = new DatabaseCollector($this->get('db'));
-        $this->collectors[] = new DbalCollector($this->get('modelconfig'));
-
-        $this->collectors[] = new TemplateCollector($this->get('template'), $utils, $this->get('kernel')->getRootDir());
-        $this->collectors[] = new EventCollector($eventManager, $utils);
-
-        foreach ($this->collectors as $collector) {
-            $collector->start();
-        }
-    }
-
-
-    /**
-     * Listener method of the Enlight_Controller_Front_DispatchLoopShutdown event.
-     * On Dispatch Shutdown collects results and dumps to log component.
-     *
-     * @param \Enlight_Event_EventArgs $args
-     */
-    public function onDispatchLoopShutdown(\Enlight_Event_EventArgs $args)
-    {
-        /** @var Clockwork $clockwork */
-        $clockwork = Shopware()->Container()->get('shopwareclockwork.clockwork');
-
-        $args->getResponse()->setHeader("X-Clockwork-Id", $clockwork->getRequest()->id);
-        $args->getResponse()->setHeader("X-Clockwork-Version",  $clockwork::VERSION);
-        $args->getResponse()->setHeader("X-Clockwork-Path",  '/Clockwork/index/id/');
-
-        $clockwork->addDataSource(new PhpDataSource());
-        $clockwork->addDataSource(Shopware()->Container()->get('shopwareclockwork.datasource'));
-
-        $clockwork->resolveRequest();
-        $clockwork->storeRequest();
-    }
 
 }

@@ -41,14 +41,11 @@ class Container implements SubscriberInterface
     }
 
     /**
-     * @param \Enlight_Event_EventArgs $args
      * @return ShopwareDataSource
      */
-    public function onClockworkDataSourceService(\Enlight_Event_EventArgs $args)
+    public function onClockworkDataSourceService()
     {
-        $shopwareDataSource = new ShopwareDataSource();
-        $shopwareDataSource->setBaseInfo( $args->getRequest() );
-        return $shopwareDataSource;
+        return new ShopwareDataSource();
     }
 
     /**
