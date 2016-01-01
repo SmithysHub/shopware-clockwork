@@ -1,5 +1,11 @@
 {
+  "name": "wesolowski/ShopwareClockwork",
+  "description": "Shopware Plugin integrating the Clockwork Chrome extension",
+  "type": "library",
+  "license": "MIT",
   "require": {
+    "php": ">=5.4.0",
     "itsgoingd/clockwork": "v1.9"
   }
 }
+
