@@ -60,13 +60,14 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
      */
     public function install()
     {
-        $this->subscribeEvent('Enlight_Controller_Front_StartDispatch', 'onStartDispatch');
+        if ($this->isDebugPluginActive() === false ) {
+            throw new Exception('"Shopware-Debug-plugin" is not active');
+        }
+
+        $this->subscribeEvent('Enlight_Controller_Front_StartDispatch', 'onStartDispatch', -1);
         $this->registerController('Frontend', 'Clockwork');
 
-        $clockWorkLog = (new Container())->getClockworkLogPath();
-        if( ! is_dir($clockWorkLog) ) {
-            mkdir($clockWorkLog, 0755);
-        }
+        $this->createClockworkLogDir();
 
         return true;
     }
@@ -78,6 +79,10 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
      */
     public function onStartDispatch(\Enlight_Event_EventArgs $args)
     {
+        if( $this->isDebugPluginActive() === false ) {
+            return;
+        }
+
         $events = $this->Application()->Events();
         $events->addSubscriber(new Container());
 
@@ -96,6 +101,18 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
 
         foreach ($subscribers as $subscriber) {
             $events->addSubscriber($subscriber);
+        }
+    }
+
+    protected function isDebugPluginActive() {
+        return Shopware()->Plugins()->Core()->Debug()->Info()->get('active') === "1";
+    }
+
+    protected function createClockworkLogDir()
+    {
+        $clockWorkLog = (new Container())->getClockworkLogPath();
+        if (!is_dir($clockWorkLog)) {
+            mkdir($clockWorkLog, 0755);
         }
     }
 
