@@ -7,6 +7,7 @@ own events on the timeline.
 
 * Clockwork: https://github.com/itsgoingd/clockwork
 * Chrome Extension: https://github.com/itsgoingd/clockwork-chrome
+* Shopware: https://github.com/shopware/shopware
 
 NOTE: This plugin is only active when shopware debug plugin active is.
 
