@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit colors="always" verbose="true" bootstrap="./tests/Bootstrap.php">
+    <testsuites>
+        <testsuite name="Clockwork Integration">
+            <directory>tests/Integration</directory>
+        </testsuite>
+        <testsuite name="Clockwork UnitTest">
+            <directory>tests/Unit</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
