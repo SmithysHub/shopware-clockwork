@@ -1,5 +1,7 @@
 <?php
 
+use Shopware\Plugins\ShopwareClockwork\Subscriber\Container;
+
 class Shopware_Controllers_Frontend_Clockwork extends \Enlight_Controller_Action
 {
 
@@ -26,9 +28,20 @@ class Shopware_Controllers_Frontend_Clockwork extends \Enlight_Controller_Action
     public function indexAction()
     {
         $id = $this->Request()->getParam('id', null);
+        if( $id ) {
+            $clockwork = $this->container->get('shopwareclockwork.clockwork');
+            $this->View()->assign(json_decode($clockwork->getStorage()->retrieveAsJson($id), true));
 
-        $clockwork = $this->container->get('shopwareclockwork.clockwork');
-        $this->View()->assign(json_decode($clockwork->getStorage()->retrieveAsJson($id), true));
+            $this->deleteLog($id);
+        }
+
+    }
+
+    protected function deleteLog( $id ) {
+        $logPath = (new Container())->getClockworkLogPath() . '/' . $id . '.json';
+        if( is_file($logPath) ) {
+            unlink($logPath);
+        }
     }
 
 
