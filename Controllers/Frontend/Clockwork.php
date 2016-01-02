@@ -14,14 +14,8 @@ class Shopware_Controllers_Frontend_Clockwork extends \Enlight_Controller_Action
     public function postDispatch()
     {
         $data = $this->View()->getAssign();
-
-        $pretty = $this->Request()->getParam('pretty', false);
-
         $data = Zend_Json::encode($data);
-        if ($pretty) {
-            $data = Zend_Json::prettyPrint($data);
-        }
-
+        
         $this->Response()->setHeader('Content-type', 'application/json', true);
         $this->Response()->setBody($data);
     }
