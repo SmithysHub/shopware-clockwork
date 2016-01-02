@@ -1,5 +1,6 @@
 <?php
 
+use Shopware\Plugins\ShopwareClockwork\Clockwork\Components\Log\ClockworkHandler;
 use Shopware\Plugins\ShopwareClockwork\Subscriber\Container;
 
 class Shopware_Controllers_Frontend_Clockwork extends \Enlight_Controller_Action
@@ -31,17 +32,16 @@ class Shopware_Controllers_Frontend_Clockwork extends \Enlight_Controller_Action
         if( $id ) {
             $clockwork = $this->container->get('shopwareclockwork.clockwork');
             $this->View()->assign(json_decode($clockwork->getStorage()->retrieveAsJson($id), true));
-
-            $this->deleteLog($id);
+            $this->getClockworkHandler()->deleteLog($id);
         }
 
     }
 
-    protected function deleteLog( $id ) {
-        $logPath = (new Container())->getClockworkLogPath() . '/' . $id . '.json';
-        if( is_file($logPath) ) {
-            unlink($logPath);
-        }
+    /**
+     * @return ClockworkHandler
+     */
+    protected function getClockworkHandler() {
+        return new ClockworkHandler();
     }
 
 
