@@ -4,6 +4,7 @@ namespace Shopware\Plugins\ShopwareClockwork\Clockwork\Components\Log;
 use Enlight_Controller_Request_Request as Request;
 use Monolog\Handler\AbstractProcessingHandler;
 use Shopware\Plugins\ShopwareClockwork\Clockwork\DataSource\ShopwareDataSource;
+use Shopware\Plugins\ShopwareClockwork\Subscriber\Container;
 
 class ClockworkHandler extends AbstractProcessingHandler
 {
@@ -60,6 +61,23 @@ class ClockworkHandler extends AbstractProcessingHandler
      */
     protected function getShopwareDataSource(){
         return $this->container->get('shopwareclockwork.datasource');
+    }
+
+    /**
+     * @param int $id
+     */
+    public function deleteLog( $id ) {
+        $logPath = $this->getPluginContainer()->getClockworkLogPath() . '/' . $id . '.json';
+        if( is_file($logPath) ) {
+            unlink($logPath);
+        }
+    }
+
+    /**
+     * @return Container
+     */
+    protected function getPluginContainer() {
+        return new Container;
     }
 
 }

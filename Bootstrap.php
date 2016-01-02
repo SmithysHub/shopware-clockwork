@@ -41,7 +41,7 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
      */
     public function getVersion()
     {
-        return "dev";
+        return "1.0 RC1";
     }
 
     /**
@@ -79,12 +79,12 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
      */
     public function onStartDispatch(\Enlight_Event_EventArgs $args)
     {
+        $events = $this->Application()->Events();
+        $events->addSubscriber(new Container());
+
         if( $this->isDebugPluginActive() === false ) {
             return;
         }
-
-        $events = $this->Application()->Events();
-        $events->addSubscriber(new Container());
 
         $subscribers = [
             new Debug()
