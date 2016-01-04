@@ -15,6 +15,11 @@ require_once $pluginDir . '/vendor/autoload.php';
 );
 
 \TestHelper::Instance()->Loader()->registerNamespace(
+    'Shopware\\Plugin\\Debug',
+    $pluginDir . '../../../Default/Core/Debug/'
+);
+
+\TestHelper::Instance()->Loader()->registerNamespace(
     'Shopware\\Tests\\' . $pluginName,
     __DIR__ . '/'
 );
