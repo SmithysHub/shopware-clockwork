@@ -32,13 +32,9 @@ class Debug implements SubscriberInterface
         ];
     }
 
-    public function onFilterHandlerRegister(\Enlight_Event_EventArgs $arguments)
+    public function onFilterHandlerRegister()
     {
-        $handlerRegister = $arguments->getReturn();
-
-        $handlerRegister[] = new ClockworkHandler();
-
-        return $handlerRegister;
+        return new ClockworkHandler();
     }
 
     public function onFilterCollectors(\Enlight_Event_EventArgs $arguments)

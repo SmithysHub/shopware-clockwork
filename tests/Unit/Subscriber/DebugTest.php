@@ -28,13 +28,7 @@ class DebugTest extends \Enlight_Components_Test_TestCase
     public function testOnFilterHandlerRegister()
     {
         $debug = $this->getDebugClass();
-        $arguments = new \Enlight_Event_EventArgs();
-        $arguments->setReturn([]);
-
-        $handlerRegister = $debug->onFilterHandlerRegister($arguments);
-
-        $this->assertCount(1, $handlerRegister);
-        $this->assertInstanceOf('\Shopware\Plugins\ShopwareClockwork\Clockwork\Components\Log\ClockworkHandler', $handlerRegister[0]);
+        $this->assertInstanceOf('\Shopware\Plugins\ShopwareClockwork\Clockwork\Components\Log\ClockworkHandler', $debug->onFilterHandlerRegister());
     }
 
     public function testOnFilterCollectors()
