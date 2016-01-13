@@ -14,7 +14,7 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
     public function afterInit()
     {
         $this->get('Loader')->registerNamespace(
-            'Shopware\\Plugins\\' . basename(__DIR__) ,
+            'Shopware\\Plugins\\' . basename(__DIR__),
             $this->Path()
         );
         require_once __DIR__ . '/vendor/autoload.php';
@@ -60,7 +60,7 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
      */
     public function install()
     {
-        if ($this->isDebugPluginActive() === false ) {
+        if ($this->isDebugPluginActive() === false) {
             throw new Exception('"Shopware-Debug-plugin" is not active');
         }
 
@@ -82,7 +82,7 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
         $events = $this->Application()->Events();
         $events->addSubscriber(new Container());
 
-        if( $this->isDebugPluginActive() === false ) {
+        if ($this->isDebugPluginActive() === false) {
             return;
         }
 
@@ -95,7 +95,7 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
         /** @var \Enlight_Controller_Request_Request $request */
         $request = $args->getSubject()->Request();
 
-        if( $debugPlugin->isRequestAllowed($request) === true && (new ClockworkHandler())->acceptsRequest($request) === true ) {
+        if ($debugPlugin->isRequestAllowed($request) === true && (new ClockworkHandler())->acceptsRequest($request) === true) {
             $subscribers[] = new DispatchLoopShutdown();
         }
 
@@ -104,7 +104,8 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
         }
     }
 
-    protected function isDebugPluginActive() {
+    protected function isDebugPluginActive()
+    {
         return Shopware()->Plugins()->Core()->Debug()->Info()->get('active') === "1";
     }
 
@@ -115,6 +116,4 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
             mkdir($clockWorkLog, 0755);
         }
     }
-
-
 }

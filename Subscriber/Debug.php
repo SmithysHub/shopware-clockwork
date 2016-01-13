@@ -10,7 +10,6 @@ use Shopware\Plugin\Debug\Components\TemplateCollector;
 
 class Debug implements SubscriberInterface
 {
-
     /**
      * @var \Shopware\Components\DependencyInjection\Container
      */
@@ -43,12 +42,12 @@ class Debug implements SubscriberInterface
         $utils = $arguments->get('utils');
 
         foreach ($collectors as $key => $collector) {
-            if( $collector instanceof EventCollector) {
+            if ($collector instanceof EventCollector) {
                 $collectors[$key] = new ClockworkEventCollector(
                     $arguments->get('eventManager'),
                     $utils
                 );
-            } elseif( $collector instanceof TemplateCollector) {
+            } elseif ($collector instanceof TemplateCollector) {
                 $collectors[$key] = new ClockworkTemplateCollector(
                     $this->container->get('template'),
                     $utils,
@@ -59,5 +58,4 @@ class Debug implements SubscriberInterface
 
         return $collectors;
     }
-
 }
