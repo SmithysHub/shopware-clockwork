@@ -51,8 +51,8 @@ class Container implements SubscriberInterface
     /**
      * @return string
      */
-    public function getClockworkLogPath() {
+    public function getClockworkLogPath()
+    {
         return $this->container->get('kernel')->getLogDir() . DIRECTORY_SEPARATOR . 'clockwork' . DIRECTORY_SEPARATOR;
     }
-
 }

@@ -4,7 +4,8 @@ namespace Shopware\Plugins\ShopwareClockwork\Clockwork\Components\Collector;
 use Shopware\Components\Logger;
 use Shopware\Plugin\Debug\Components\TemplateCollector as BaseTemplateCollector;
 
-class TemplateCollector extends BaseTemplateCollector{
+class TemplateCollector extends BaseTemplateCollector
+{
     /**
      * Logs all rendered templates into the internal log object.
      * Each logged template contains the template name, the required compile time,
@@ -27,5 +28,4 @@ class TemplateCollector extends BaseTemplateCollector{
     {
         return number_format($time, 5, '.', '');
     }
-
 }

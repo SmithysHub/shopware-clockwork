@@ -25,9 +25,9 @@ class ClockworkTest extends \Enlight_Components_Test_Controller_TestCase
 
         $defaultBody = json_decode($this->Response()->getBody('default'), true);
 
-        $this->assertTrue($this->Response()->getHeaders()[0]["value"] === 'application/json' );
-        $this->assertTrue($defaultBody['id'] === $content['id'] );
-        $this->assertTrue($defaultBody['time'] === $content['time'] );
+        $this->assertTrue($this->Response()->getHeaders()[0]["value"] === 'application/json');
+        $this->assertTrue($defaultBody['id'] === $content['id']);
+        $this->assertTrue($defaultBody['time'] === $content['time']);
 
         $this->reset();
     }
@@ -41,8 +41,8 @@ class ClockworkTest extends \Enlight_Components_Test_Controller_TestCase
 
         $defaultBody = json_decode($this->Response()->getBody('default'), true);
 
-        $this->assertTrue($this->Response()->getHeaders()[0]["value"] === 'application/json' );
-        $this->assertTrue($this->Response()->getHeaders()[0]["value"] === 'application/json' );
+        $this->assertTrue($this->Response()->getHeaders()[0]["value"] === 'application/json');
+        $this->assertTrue($this->Response()->getHeaders()[0]["value"] === 'application/json');
         $this->assertTrue(empty($defaultBody));
         $this->assertTrue(is_array($defaultBody));
 
@@ -59,7 +59,7 @@ class ClockworkTest extends \Enlight_Components_Test_Controller_TestCase
         parent::tearDown();
 
         $filePath = $this->getLogFilePath();
-        if( is_file($filePath) ) {
+        if (is_file($filePath)) {
             unlink($filePath);
         }
     }
@@ -67,7 +67,8 @@ class ClockworkTest extends \Enlight_Components_Test_Controller_TestCase
     /**
      * @return string
      */
-    protected function getUnitClockWorkLogDir() {
+    protected function getUnitClockWorkLogDir()
+    {
         $clockWorkLog = Shopware()->Container()->get('kernel')->getLogDir() . DIRECTORY_SEPARATOR . 'clockwork' . DIRECTORY_SEPARATOR;
         if (!is_dir($clockWorkLog)) {
             mkdir($clockWorkLog, 0755);
@@ -78,8 +79,8 @@ class ClockworkTest extends \Enlight_Components_Test_Controller_TestCase
     /**
      * @return string
      */
-    protected function getLogFilePath() {
+    protected function getLogFilePath()
+    {
         return $this->getUnitClockWorkLogDir() . $this->logName . '.json';
     }
-
 }

@@ -31,7 +31,8 @@ class ShopwareDataSource extends DataSource
         $this->container = Shopware()->Container();
     }
 
-    public function setBaseInfo( \Enlight_Controller_Request_RequestHttp $request ) {
+    public function setBaseInfo(\Enlight_Controller_Request_RequestHttp $request)
+    {
         $this->data['controller'] = $request->getControllerName();
         $this->data['getData'] = $request->getQuery();
         $this->data['postData'] = $request->getPost();
@@ -66,11 +67,11 @@ class ShopwareDataSource extends DataSource
         foreach ($data as $item) {
             $level = LogLevel::INFO;
             $message = $item[2] . ' | ' . $item[3] . ' in: ' . $item[5] . ':' . $item[4];
-            if ( $item[2] === 'E_WARNING' ) {
+            if ($item[2] === 'E_WARNING') {
                 $level = LogLevel::WARNING;
-            } elseif( $item[2] === 'E_RECOVERABLE_ERROR' ){
+            } elseif ($item[2] === 'E_RECOVERABLE_ERROR') {
                 $level = LogLevel::ERROR;
-            } elseif( $item[2] === 'E_NOTICE' ){
+            } elseif ($item[2] === 'E_NOTICE') {
                 $level = LogLevel::NOTICE;
             }
             $this->getClockWork()->log($level, $message);
@@ -87,10 +88,10 @@ class ShopwareDataSource extends DataSource
 
         foreach ($data as $item) {
             $query = $item[2];
-            if( !empty($item[3]) ) {
+            if (!empty($item[3])) {
                 $query .= ' | Params: ' . json_encode($item[3]);
             }
-            if( $item[1] > 1 ) {
+            if ($item[1] > 1) {
                 $query .= ' | Count: ' . $item[1];
             }
             $this->data['databaseQueries'][] = [
@@ -100,28 +101,29 @@ class ShopwareDataSource extends DataSource
         }
     }
 
-    public function setControllerEventTimeline(array $data){
+    public function setControllerEventTimeline(array $data)
+    {
         $clockWork = $this->getClockWork();
 
         array_shift($data);
         foreach ($data as $item) {
             $clockWork->getTimeline()->addEvent($item[0], $item[0], $item[3], $item[2] + $item[3]);
         }
-
     }
 
 
-    public function setControllerTimeline(array $data){
+    public function setControllerTimeline(array $data)
+    {
         $clockWork = $this->getClockWork();
 
         array_shift($data);
         foreach ($data as $item) {
             $clockWork->getTimeline()->addEvent($item[0], $item[0], $item[4], $item[4] + $item[2] + $item[3]);
         }
-
     }
 
-    public function setEventInfo(array $data){
+    public function setEventInfo(array $data)
+    {
         $clockWork = $this->getClockWork();
 
         array_shift($data);
@@ -141,7 +143,7 @@ class ShopwareDataSource extends DataSource
     {
         $data = $this->getData();
         foreach ($data as $name => $item) {
-            if($name === 'postData') {
+            if ($name === 'postData') {
                 $item = $this->removePasswords($item);
             }
             $request->{$name} =  $item;
@@ -161,8 +163,8 @@ class ShopwareDataSource extends DataSource
     /**
      * @return Clockwork
      */
-    protected function getClockWork(){
+    protected function getClockWork()
+    {
         return $this->container->get('shopwareclockwork.clockwork');
     }
-
 }

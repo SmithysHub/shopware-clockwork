@@ -50,13 +50,11 @@ class DispatchLoopShutdown implements SubscriberInterface
         $response->setHeader("X-Clockwork-Path",  '/Clockwork/index/id/');
 
         $shopwareDataSource = $this->container->get('shopwareclockwork.datasource');
-        $shopwareDataSource->setBaseInfo( $request );
+        $shopwareDataSource->setBaseInfo($request);
         $clockwork->addDataSource(new PhpDataSource());
         $clockwork->addDataSource($shopwareDataSource);
 
         $clockwork->resolveRequest();
         $clockwork->storeRequest();
     }
-
-
 }

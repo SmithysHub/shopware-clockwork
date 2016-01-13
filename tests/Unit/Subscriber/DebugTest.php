@@ -13,15 +13,14 @@ use Shopware\Plugins\ShopwareClockwork\Subscriber\Debug;
  */
 class DebugTest extends \Enlight_Components_Test_TestCase
 {
-
     public function testGetSubscribedEvents()
     {
         $subscribers = $this->getDebugClass()->getSubscribedEvents();
         $debugClass = $this->getDebugClass();
 
         foreach ($subscribers as $subscriberName => $subscriberMethod) {
-            $this->assertTrue( strpos($subscriberName, 'Shopware_Plugins_Core_Debug_Bootstrap_Filter') !== false  );
-            $this->assertTrue( method_exists($debugClass, $subscriberMethod));
+            $this->assertTrue(strpos($subscriberName, 'Shopware_Plugins_Core_Debug_Bootstrap_Filter') !== false);
+            $this->assertTrue(method_exists($debugClass, $subscriberMethod));
         }
     }
 
@@ -82,8 +81,8 @@ class DebugTest extends \Enlight_Components_Test_TestCase
         $this->assertSame($info, $collectors);
     }
 
-    protected function getDebugClass() {
+    protected function getDebugClass()
+    {
         return new Debug();
     }
-
 }

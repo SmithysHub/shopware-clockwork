@@ -8,7 +8,6 @@ use Shopware\Plugins\ShopwareClockwork\Subscriber\Container;
 
 class ClockworkHandler extends AbstractProcessingHandler
 {
-
     /**
      * @var \Shopware\Components\DependencyInjection\Container
      */
@@ -41,17 +40,17 @@ class ClockworkHandler extends AbstractProcessingHandler
         $data = $record['context']['table'];
         array_shift($data);
 
-        if( strpos($message, 'Template Vars') !== false ) {
+        if (strpos($message, 'Template Vars') !== false) {
             $dataSource->formatViewData($message, $data);
-        } elseif  ( strpos($message, 'Error Log') !== false ) {
+        } elseif (strpos($message, 'Error Log') !== false) {
             $dataSource->formatErrorData($data);
-        } elseif  ( strpos($message, 'Database Querys') !== false || strpos($message, 'Model Querys') !== false) {
+        } elseif (strpos($message, 'Database Querys') !== false || strpos($message, 'Model Querys') !== false) {
             $dataSource->formatSqlQuerys($message, $data);
-        } elseif  ( strpos($message, 'Benchmark Template') !== false ) {
+        } elseif (strpos($message, 'Benchmark Template') !== false) {
             $dataSource->setControllerTimeline($data);
-        } elseif  ( strpos($message, 'Benchmark Events') !== false ) {
+        } elseif (strpos($message, 'Benchmark Events') !== false) {
             $dataSource->setEventInfo($data);
-        } elseif  ( strpos($message, 'Benchmark Controller') !== false ) {
+        } elseif (strpos($message, 'Benchmark Controller') !== false) {
             $dataSource->setControllerEventTimeline($data);
         }
     }
@@ -59,16 +58,18 @@ class ClockworkHandler extends AbstractProcessingHandler
     /**
      * @return ShopwareDataSource
      */
-    protected function getShopwareDataSource(){
+    protected function getShopwareDataSource()
+    {
         return $this->container->get('shopwareclockwork.datasource');
     }
 
     /**
      * @param int $id
      */
-    public function deleteLog( $id ) {
+    public function deleteLog($id)
+    {
         $logPath = $this->getPluginContainer()->getClockworkLogPath() . '/' . $id . '.json';
-        if( is_file($logPath) ) {
+        if (is_file($logPath)) {
             unlink($logPath);
         }
     }
@@ -76,8 +77,8 @@ class ClockworkHandler extends AbstractProcessingHandler
     /**
      * @return Container
      */
-    protected function getPluginContainer() {
+    protected function getPluginContainer()
+    {
         return new Container;
     }
-
 }
