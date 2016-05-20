@@ -6,8 +6,15 @@ use Shopware\Plugins\ShopwareClockwork\Subscriber\Container;
 use Shopware\Plugins\ShopwareClockwork\Subscriber\Debug;
 use Shopware\Plugins\ShopwareClockwork\Subscriber\DispatchLoopShutdown;
 
+use Shopware\Plugins\ShopwareClockwork\Clockwork\Setup;
+
 class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
+    /**
+     * @var Setup
+     */
+    private $setup;
+
     /**
      * The afterInit function registers the custom plugin models.
      */
@@ -60,60 +67,132 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
      */
     public function install()
     {
-        if ($this->isDebugPluginActive() === false) {
-            throw new Exception('"Shopware-Debug-plugin" is not active');
-        }
+//        if ($this->isDebugPluginActive() === false) {
+//            throw new Exception('"Shopware-Debug-plugin" is not active');
+//        }
 
         $this->subscribeEvent('Enlight_Controller_Front_StartDispatch', 'onStartDispatch', -1);
         $this->registerController('Frontend', 'Clockwork');
 
         $this->createClockworkLogDir();
 
+
+        $form   = $this->Form();
+        $parent = $this->Forms()->findOneBy(array('name' => 'Core'));
+        $form->setParent($parent);
+        $form->setElement('text', 'AllowIP', array('label' => 'Restrict to IP', 'value' => ''));
+        $fields = array(
+            array(
+                'name'        => 'logTemplateVars',
+                'label'       => 'Log template vars',
+                'default'     => true,
+            ),
+            array(
+                'name'        => 'logErrors',
+                'label'       => 'Log errors',
+                'default'     => true,
+            ),
+            array(
+                'name'        => 'logExceptions',
+                'label'       => 'Log exceptions',
+                'default'     => true,
+            ),
+            array(
+                'name'        => 'logDb',
+                'label'       => 'Benchmark Zend_Db queries',
+            ),
+            array(
+                'name'        => 'logModel',
+                'label'       => 'Benchmark DBAL queries',
+            ),
+            array(
+                'name'        => 'logTemplate',
+                'label'       => 'Benchmark template',
+            ),
+            array(
+                'name'        => 'logController',
+                'label'       => 'Benchmark controller events',
+            ),
+            array(
+                'name'        => 'logEvents',
+                'label'       => 'Benchmark events',
+            ),
+        );
+
+        foreach ($fields as $field) {
+            $form->setElement('boolean', $field['name'], array(
+                'label' => $field['label'],
+                'value' => (isset($field['default'])) ?: false,
+            ));
+        }
+
         return true;
     }
 
     /**
-     * register all subscriber class for dynamic event subsciption without plugin reinstallation
-     *
-     * @param \Enlight_Event_EventArgs $args
+     * @param Enlight_Event_EventArgs $args
      */
     public function onStartDispatch(\Enlight_Event_EventArgs $args)
     {
+        $this->setup = new Setup(
+            $this->Config(),
+            $this->get('loader'),
+            $this->Collection()
+        );
         $events = $this->Application()->Events();
         $events->addSubscriber(new Container());
 
-        if ($this->isDebugPluginActive() === false) {
-            return;
-        }
-
-        $subscribers = [
-            new Debug()
-        ];
+        $subscribers = [];
+        // @toDo wait for merge pull request https://github.com/shopware/shopware/pull/404
+        //        if ($this->isDebugPluginActive() === false) {
+        //            return;
+        //        }
+        //        $subscribers[] = new Debug();
 
         /** @var \Shopware_Plugins_Core_Debug_Bootstrap  $debugPlugin */
-        $debugPlugin = Shopware()->Plugins()->Core()->Debug();
+        //        $debugPlugin = Shopware()->Plugins()->Core()->Debug();
+        
         /** @var \Enlight_Controller_Request_Request $request */
         $request = $args->getSubject()->Request();
+        if ( $this->setup->isRequestAllowed($request) === true && (new ClockworkHandler())->acceptsRequest($request) === true) {
 
-        if ($debugPlugin->isRequestAllowed($request) === true && (new ClockworkHandler())->acceptsRequest($request) === true) {
-            $subscribers[] = new DispatchLoopShutdown();
-        }
+            $this->setup->init();
 
-        foreach ($subscribers as $subscriber) {
-            $events->addSubscriber($subscriber);
+            $events->addSubscriber(new DispatchLoopShutdown());
+
+            $this->get('events')->addListener(
+                'Enlight_Controller_Front_DispatchLoopShutdown',
+                array($this, 'onDispatchLoopShutdown')
+            );
         }
     }
 
-    protected function isDebugPluginActive()
+    /**
+     * @deprecated wait for merge pull request https://github.com/shopware/shopware/pull/404
+     * @param \Enlight_Event_EventArgs $args
+     */
+    public function onDispatchLoopShutdown(\Enlight_Event_EventArgs $args)
+    {
+        foreach ( $this->setup->getCollectors() as $collector) {
+            $collector->logResults($this->setup->getLogger());
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    private function isDebugPluginActive()
     {
         return Shopware()->Plugins()->Core()->Debug()->Info()->get('active') === "1";
     }
 
-    protected function createClockworkLogDir()
+    private function createClockworkLogDir()
     {
         $clockWorkLog = (new Container())->getClockworkLogPath();
         if (!is_dir($clockWorkLog)) {
             mkdir($clockWorkLog, 0755);
         }
     }
+    
+    
 }

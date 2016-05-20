@@ -36,6 +36,7 @@ class DispatchLoopShutdown implements SubscriberInterface
      */
     public function onDispatchLoopShutdown(\Enlight_Event_EventArgs $args)
     {
+
         /** @var \Enlight_Controller_Request_Request $request */
         $request = $args->getSubject()->Request();
 

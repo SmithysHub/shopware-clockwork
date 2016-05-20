@@ -11,7 +11,7 @@ class ClockworkHandler extends AbstractProcessingHandler
     /**
      * @var \Shopware\Components\DependencyInjection\Container
      */
-    protected $container;
+    private $container;
 
     /**
      * ClockworkLogger constructor.
@@ -56,14 +56,6 @@ class ClockworkHandler extends AbstractProcessingHandler
     }
 
     /**
-     * @return ShopwareDataSource
-     */
-    protected function getShopwareDataSource()
-    {
-        return $this->container->get('shopwareclockwork.datasource');
-    }
-
-    /**
      * @param int $id
      */
     public function deleteLog($id)
@@ -75,9 +67,17 @@ class ClockworkHandler extends AbstractProcessingHandler
     }
 
     /**
+     * @return ShopwareDataSource
+     */
+    private function getShopwareDataSource()
+    {
+        return $this->container->get('shopwareclockwork.datasource');
+    }
+
+    /**
      * @return Container
      */
-    protected function getPluginContainer()
+    private function getPluginContainer()
     {
         return new Container;
     }
