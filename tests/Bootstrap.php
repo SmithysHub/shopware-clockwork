@@ -24,6 +24,4 @@ require_once $pluginDir . '/vendor/autoload.php';
     __DIR__ . '/'
 );
 
-Shopware()->Plugins()->$pluginFolder()->$pluginName()->onStartDispatch();
-
 Shopware()->Front()->setRequest(new Enlight_Controller_Request_RequestHttp());
