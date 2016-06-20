@@ -24,7 +24,10 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
             'Shopware\\Plugins\\' . basename(__DIR__),
             $this->Path()
         );
-        require_once __DIR__ . '/vendor/autoload.php';
+
+        if($this->hasVendorAutoloadFile() === true ) {
+            require_once $this->getVendorAutoloadFile();
+        }
     }
 
     /**
@@ -67,9 +70,9 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
      */
     public function install()
     {
-//        if ($this->isDebugPluginActive() === false) {
-//            throw new Exception('"Shopware-Debug-plugin" is not active');
-//        }
+       if ($this->hasVendorAutoloadFile() === false) {
+           throw new Exception('Composer autoloader class not found.');
+       }
 
         $this->subscribeEvent('Enlight_Controller_Front_StartDispatch', 'onStartDispatch', -1);
         $this->registerController('Frontend', 'Clockwork');
@@ -151,7 +154,7 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
 
         /** @var \Shopware_Plugins_Core_Debug_Bootstrap  $debugPlugin */
         //        $debugPlugin = Shopware()->Plugins()->Core()->Debug();
-        
+
         /** @var \Enlight_Controller_Request_Request $request */
         $request = $args->getSubject()->Request();
         if ( $this->setup->isRequestAllowed($request) === true && (new ClockworkHandler())->acceptsRequest($request) === true) {
@@ -193,6 +196,20 @@ class Shopware_Plugins_Core_ShopwareClockwork_Bootstrap extends Shopware_Compone
             mkdir($clockWorkLog, 0755);
         }
     }
-    
-    
+
+    /**
+     * @return string
+     */
+    private function getVendorAutoloadFile() {
+        return __DIR__ . '/vendor/autoload.php';
+    }
+
+    /**
+     * @return bool
+     */
+    private function hasVendorAutoloadFile() {
+        return file_exists($this->getVendorAutoloadFile());
+    }
+
+
 }
